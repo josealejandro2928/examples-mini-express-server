@@ -1,8 +1,8 @@
 
-const { AppServer} = require("mini-express-server");
+const { AppServer } = require("mini-express-server");
 
 const helmet = require("helmet");
-const { jsonParser } = require("./middlewares/index.js")
+const bodyParser = require("body-parser");
 const app = new AppServer();
 const port = 3000;
 
@@ -12,7 +12,8 @@ const cors = require('cors')
 app.use(morgan("common"));
 app.use(cors());
 app.use(helmet());
-app.use(jsonParser);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const userRouter = require("./routes/user.js");
 
