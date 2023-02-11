@@ -1,5 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
+
+const { ServerError } = require("mini-express-server");
 const { User } = require("../models");
+
 
 module.exports = {
     logReqMidd: (req, res, next) => {
@@ -17,27 +19,16 @@ module.exports = {
     },
     authorizationMidd: async (req, res, next) => {
         if (!req.headers.authorization)
-            throw { code: 401, message: "There is not authorization header" }
+            throw new ServerError(401, "There is not authorization header", ["You should pass a Authorization header like: Bearer "])
 
         let userPart = req.headers.authorization.split("Bearer ")[1]
         let userId = userPart.split("userId:")[1]
         let loggedUser = await User.getUserById(userId);
         if (!loggedUser)
-            throw { code: 401, message: "Invalid user token" }
+            throw new ServerError(401, "Invalid user token", ["You should pass a Authorization header like: Bearer "])
 
         req.loggedUser = loggedUser;
         next();
-    },
-    jsonParser: (req, res, next) => {
-        try {
-            let bodyJson = JSON.parse(req.body);
-            req.body = bodyJson;
-        } catch (e) {
-            // NO JSON
-        } finally {
-            next();
-        }
-
     }
 
 }
