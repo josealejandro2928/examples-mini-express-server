@@ -1,5 +1,6 @@
 
 const { AppServer } = require("mini-express-server");
+const crypto = require("crypto");
 const busboy = require('busboy');
 
 const morgan = require("morgan");
@@ -18,22 +19,28 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
 const hostApp = "http://127.0.0.1:3000/static"
 // Static files //
 app.setStatic("/static", path.join(__dirname, ".", "static"))
 
 const rootFolder = path.join(__dirname, ".", "static");
 
-app.get("/", (req, res) => {
-    const { query, params, body, headers } = req;
-    res.status(200).json({ query, params, body, headers });
+app.get("/", (req, res, next) => {
+    fs.readdir(rootFolder, (err, files) => {
+        if (err) {
+            next(err);
+            return;
+        }
+        res.status(200).json({ files: files.map((f) => hostApp + "/" + f) });
+    })
 })
 
 app.post("/upload", (req, res, next) => {
     let saveToPath = "";
     let fileName = ""
     const bb = busboy({ headers: req.headers });
-    bb.on('file', (name, file, info) => {
+    bb.once('file', (name, file, info) => {
         const { filename, encoding, mimeType } = info;
         console.log(
             `File [${name}]: filename: %j, encoding: %j, mimeType: %j`,
@@ -41,14 +48,16 @@ app.post("/upload", (req, res, next) => {
             encoding,
             mimeType
         );
-        saveToPath = path.join(rootFolder, filename);
-        fileName = filename;
+        let fileUuid = crypto.randomBytes(12).toString("hex");
+        saveToPath = path.join(rootFolder, fileUuid + "_" + filename);
+        fileName = fileUuid + "_" + filename;
         file.pipe(fs.createWriteStream(saveToPath));
     });
-    bb.on('close', () => {
+    bb.once('close', () => {
+        bb.removeListener("error", next);
         res.json({ file: hostApp + "/" + fileName, msg: "Upload successfully" })
     });
-    bb.on("error", (err) => next(err))
+    bb.once("error", next)
     req.pipe(bb);
 })
 

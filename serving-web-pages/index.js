@@ -16,7 +16,7 @@ app.use(helmet());
 
 // Static files //
 app.setStatic("/static", path.join(__dirname, ".", "static"))
-const pagesRootPath = path.resolve("serving-web-pages", "pages");
+const pagesRootPath = path.resolve(__dirname, "pages");
 
 app.get("/", (req, res, ) => {
     res.status(200).sendFile(path.resolve(pagesRootPath, "portfolio.html"));

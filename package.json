@@ -9,14 +9,14 @@
   "author": "Jose Alejandro Concepcion",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^8.33.0",
-    "mini-express-server": "file:mini-express-server-1.1.1.tgz"
+    "eslint": "^8.33.0"
   },
   "dependencies": {
     "body-parser": "^1.20.1",
     "busboy": "^1.6.0",
     "cors": "^2.8.5",
     "helmet": "^6.0.1",
+    "mini-express-server": "^1.1.2",
     "morgan": "^1.10.0"
   }
 }
