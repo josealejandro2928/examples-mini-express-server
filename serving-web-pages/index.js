@@ -6,6 +6,7 @@ const cors = require('cors')
 const helmet = require("helmet");
 const path = require("node:path");
 const fs = require("node:fs");
+var compression = require('compression')
 
 const app = new AppServer();
 const port = 3000;
@@ -13,6 +14,7 @@ const port = 3000;
 app.use(morgan("common"));
 app.use(cors());
 app.use(helmet());
+app.use(compression());
 
 // Static files //
 app.setStatic("/static", path.join(__dirname, ".", "static"))

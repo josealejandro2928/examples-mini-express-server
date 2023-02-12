@@ -8,18 +8,20 @@ const port = 3000;
 
 const morgan = require("morgan");
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 
 app.use(morgan("common"));
 app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser())
 
 const userRouter = require("./routes/user.js");
 
 app.get("/", (req, res) => {
-    const { query, params, body, headers } = req;
-    res.status(200).json({ query, params, body, headers });
+    const { query, params, body, headers, cookies } = req;
+    res.status(200).json({ query, params, body, headers, cookies });
 })
 
 app.use("/user", userRouter);

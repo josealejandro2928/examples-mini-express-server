@@ -55,6 +55,22 @@ router.put("/:userId", userByIdMiddleware, async (req, res) => {
     res.status(201).json({ data: user });
 })
 
+router.patch("/:userId", userByIdMiddleware, async (req, res) => {
+    let user = req.context.user;
+    let data = req.body;
+    if (data.name != undefined) {
+        user.name = data.name;
+    }
+    if (data.lastName != undefined) {
+        user.lastName = data.lastName;
+    }
+    if (data.age != undefined) {
+        user.age = data.age;
+    }
+    user = await User.editUser(user);
+    res.status(201).json({ data: user });
+})
+
 router.delete("/:userId", authorizationMidd, async (req, res) => {
     if (req.loggedUser.id != req.params.userId) {
         throw new ServerError(403, "Not allowed", ["you can edit other users"]);

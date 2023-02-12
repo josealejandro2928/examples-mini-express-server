@@ -18,7 +18,7 @@ app.use(cors());
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
+const serveIndex = require('serve-index')
 
 const hostApp = "http://127.0.0.1:3000/static"
 // Static files //
@@ -26,14 +26,12 @@ app.setStatic("/static", path.join(__dirname, ".", "static"))
 
 const rootFolder = path.join(__dirname, ".", "static");
 
-app.get("/", (req, res, next) => {
-    fs.readdir(rootFolder, (err, files) => {
-        if (err) {
-            next(err);
-            return;
-        }
-        res.status(200).json({ files: files.map((f) => hostApp + "/" + f) });
-    })
+app.use("/", serveIndex(path.join(__dirname, ".", "static"), { 'icons': true }))
+
+app.get("/:item", (req, res) => {
+    req.pathName = "/static" + req.pathName.replace(/%20/g, " ");
+    // redirect to the static files
+    app.routesHandler(req, res, null);
 })
 
 app.post("/upload", (req, res, next) => {
